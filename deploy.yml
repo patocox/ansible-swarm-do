@@ -1,0 +1,11 @@
+---
+
+# Apply to Admin node
+
+- name: apply to admin node
+  hosts: admin
+  remote_user: root
+
+  roles:
+   - common
+   - admin
