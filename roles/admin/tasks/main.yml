@@ -16,4 +16,12 @@
    file: path=/usr/local/bin/docker-compose mode=0100
 
 -  name: Create Swarm Token
-   shell: export SWARM_TOKEN=$(docker run swarm create)
+   shell: echo $(docker run swarm create)
+   register: SWARM_TOKEN
+
+-  name: Create Swarm Master
+   shell: docker-machine --debug create --driver digitalocean --digitalocean-access-token {{ API_TOKEN }} --digitalocean-private-networking --swarm --swarm-master --swarm-discovery token://{{ SWARM_TOKEN.stdout }} swarm-master
+
+-  name: Create Swarm Nodes
+   shell: docker-machine --debug create --driver digitalocean --digitalocean-access-token {{ API_TOKEN }} --digitalocean-private-networking --swarm --swarm-discovery token://{{ SWARM_TOKEN.stdout }} swarm-node-{{ item }}
+   with_sequence: count={{ NODE_COUNT }}
